@@ -96,7 +96,7 @@ Double-click "Vivado 2020.2.Desktop" icon on your desktop, click "Trust and Laun
 
 ![](./images/ciscosmartnic-101-02-configure-fdk-12.png)
 
-Vivado GUI can be closed, it is not required for us to build custom application using Nexus FDK. Let's back to CLI now.
+Vivado GUI can be closed, it is not required for us to build custom application using Nexus FDK. Let's go back to CLI now.
 
 ## Configure Xilinx Environment
 
