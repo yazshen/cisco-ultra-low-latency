@@ -103,7 +103,7 @@ Vivado GUI can be closed, it is not required for us to build custom application 
 Source settings
 
 ```
-cat source /tools/Xilinx/Vivado/2020.2/settings64.sh
+cat /tools/Xilinx/Vivado/2020.2/settings64.sh
 source /tools/Xilinx/Vivado/2020.2/settings64.sh
 echo 'source /tools/Xilinx/Vivado/2020.2/settings64.sh'>>/etc/profile
 ```
@@ -149,7 +149,7 @@ make all
 
 ![](./images/ciscosmartnic-101-02-configure-fdk-16.png)
 
-Run "ping-example" to send ICMP to custom applilcation on SmartNIC, SmartNIC will complete ARP and ICMP process. You can run "arp -a" command to verify if Linux OS involved
+Run "ping-example" to send ICMP to custom applilcation on SmartNIC, SmartNIC will complete ARP and ICMP process.
 
 ```
 ./ping-example exanic0 172.16.100.111 172.16.100.200
