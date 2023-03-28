@@ -4,7 +4,10 @@
 Robbie Shen (yazshen@cisco.com)
 
 ## Table of Contents
-### Cisco SmartNIC Quick Guide 101
+### Cisco SmartNIC EndUser Guide
+1. [思科FPGA智能网卡使用手册](https://github.com/yazshen/cisco-ultra-low-latency/blob/main/思科FPGA智能网卡使用手册.md)
+
+### Cisco SmartNIC FDK Quick Guide 101
 1. [Install and configure Cisco SmartNIC on Linux](https://github.com/yazshen/cisco-ultra-low-latency/blob/main/ciscosmartnic-101-01-install-driver.md)
 2. [Configure Xilinx Vivado and build example application using Cisco Nexus FDK](https://github.com/yazshen/cisco-ultra-low-latency/blob/main/ciscosmartnic-101-02-configure-fdk.md)
 
