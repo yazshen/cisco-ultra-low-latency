@@ -596,7 +596,7 @@ exact-capture -k -i exanic0:0 -i exanic0:1 -o /data0/ -c 0:1,2:3,4
 使用方式
 
 ```bash
- cisco-ull-timestamps-decode.py [-h] --file <pcap file name> --type {3550f,3550fhpt,3550t,exanic,exact}
+ cisco-ull-timestamps-decode.py [-h] --file <pcap file name> --type {3550fhpt,3550t,exanic,exact}
 ```
 
 
