@@ -28,9 +28,9 @@ cisco-ull-timestamps-decode.py [-h] --file <pcap file name> --type {3550fhpt,355
 
 ```bash
 options:
- -h, --help															show this help message and exit
- --file <pcap file name>								pcap file to decode
- --type {3550fhpt,3550t,exanic,exact}		packet captured by (Nexus 3550-F HPT, Nexus 3550-T, Exanic-Capture, Exact-Capture)
+ -h, --help                             show this help message and exit
+ --file <pcap file name>                pcap file to decode
+ --type {3550fhpt,3550t,exanic,exact}   packet captured by (Nexus 3550-F HPT, Nexus 3550-T, Exanic-Capture, Exact-Capture)
 ```
 
 
