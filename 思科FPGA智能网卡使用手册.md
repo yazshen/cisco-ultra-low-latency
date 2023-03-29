@@ -591,7 +591,7 @@ exact-capture -k -i exanic0:0 -i exanic0:1 -o /data0/ -c 0:1,2:3,4
 
 由于不同设备、不同抓包工具得到的时间戳格式不一样，所以通常会造成用户的困扰。以下工具可以帮助用户方便解析pcap或expcap中的时间戳信息
 
-下载地址：https://github.com/yazshen/cisco-ultra-low-latency/blob/main/cisco-ull-timestamps-decoder.md
+下载地址：https://github.com/yazshen/cisco-ultra-low-latency/blob/main/cisco-ull-timestamps-decoder/cisco-ull-timestamps-decoder.md
 
 使用方式
 
