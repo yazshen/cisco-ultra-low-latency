@@ -553,7 +553,7 @@ exanic-capture -i exanic0:0 -H -N -w file001.pcap
 通过SmartNIC网卡对入向流量进行高速且无损抓包，支持10G/25G速率和皮秒级硬件时间戳
 
 - 可指定多个网卡接口同时抓包
-- 默认输出格式为expcap后缀名，可以直接在最新版本的Wireshark打开并分析
+- 默认输出格式为expcap后缀名，可以直接在最新版本的Wireshark打开并分析（目前不支持Wireshark的Exblaze Trailer插件）
 - 支持硬件时间戳，可达皮秒级精度
 - 注意：时间戳格式和Nexus 3550-F HPT交换机不一致，但包含设备ID、端口ID和时间戳
 - 数据包格式说明：https://www.cisco.com/c/en/us/td/docs/dcn/nexus3550/exact-capture/sw/user-guide/exact-capture-user-guide/expcap.html
@@ -591,7 +591,7 @@ exact-capture -k -i exanic0:0 -i exanic0:1 -o /data0/ -c 0:1,2:3,4
 
 由于不同设备、不同抓包工具得到的时间戳格式不一样，所以通常会造成用户的困扰。以下工具可以帮助用户方便解析pcap或expcap中的时间戳信息
 
-下载地址：https://github.com/yazshen/cisco-ultra-low-latency
+下载地址：https://github.com/yazshen/cisco-ultra-low-latency/blob/main/cisco-ull-timestamps-decoder.md
 
 使用方式
 
@@ -601,7 +601,17 @@ exact-capture -k -i exanic0:0 -i exanic0:1 -o /data0/ -c 0:1,2:3,4
 
 
 
-## 19. 透明模式下双向同时抓包
+## 19. 抓包工具的对比和区别
+
+|                | 流量方向 | 支持Kernel Bypass | 时间戳                         | 时间戳精度  |
+| -------------- | -------- | ----------------- | ------------------------------ | ----------- |
+| tcpdump        | RX + TX  | 不支持            | 默认软件时间戳，支持硬件时间戳 | nano-second |
+| exanic-capture | RX Only  | 支持              | 默认软件时间戳，支持硬件时间戳 | nano-second |
+| exact-capture  | RX Only  | 支持              | 默认硬件时间戳                 | pico-second |
+
+
+
+## 20. 透明模式下双向同时抓包
 
 Exa-Sock透明加速使用中，无法通过tcpdump捕捉数据。同时，Exa-Capture也只能捕捉RX方向数据包。如果需要同时捕捉RX+TX数据包，可以通过Mirror功能来实现，无需再借助于外部交换机进行抓包。
 
@@ -622,7 +632,7 @@ exanic-config exanic0:0 mirror-tx on
 
 
 
-## 20. 驱动安装核对
+## 21. 驱动安装核对
 
 显示内核驱动安装信息
 
@@ -653,7 +663,7 @@ dmesg | grep -i -E "exanic|exasock"
 
 
 
-## 21. 常见问题与解答
+## 22. 常见问题与解答
 
 问题："module verification failed: signature and/or required key missing - tainting kernel"告警信息
 
@@ -686,7 +696,7 @@ modprobe -r exanic
 
 
 
-## 22. 思科售后技术支持服务
+## 23. 思科售后技术支持服务
 
 服务有效期内，思科售后技术支持服务可以为客户提供：功能和配置咨询、故障诊断、硬件翻修等售后服务。
 
