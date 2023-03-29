@@ -4,7 +4,7 @@
 Robbie Shen (yazshen@cisco.com)
 
 ## Table of Contents
-### Cisco SmartNIC EndUser Guide
+### Cisco SmartNIC User Guide
 1. [思科FPGA智能网卡使用手册](https://github.com/yazshen/cisco-ultra-low-latency/blob/main/思科FPGA智能网卡使用手册.md)
 2. [Cisco ULL Timestamps Decoder](https://github.com/yazshen/cisco-ultra-low-latency/blob/main/cisco-ull-timestamps-decoder/cisco-ull-timestamps-decoder.md)
 
