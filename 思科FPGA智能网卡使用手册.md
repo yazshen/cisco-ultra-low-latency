@@ -13,6 +13,7 @@
 | V1.4 | 2023.02.17 | 申亚中(yazshen@cisco.com)  | 更新常见问题解答和技术支持流程                       |
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
+| V1.7 | 2023.05.25 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
 
 
 
@@ -69,6 +70,21 @@
 | V5P         | 2MB      | 64KB per port (512KB total)                                  |
 | GM          | 2MB      | 128KB per port (256KB total)                                 |
 | HPT         | 2MB      | 128KB per port (256KB total)                                 |
+
+
+
+思科官方固件下载链接
+
+| 型号        | 固件下载链接                                                 |
+| ----------- | ------------------------------------------------------------ |
+| K35-S(X10)  | https://software.cisco.com/download/home/286326467/type/286326893/release |
+| K35-Q(X40)  | https://software.cisco.com/download/home/286326471/type/286326893/release |
+| K3P-S(X25)  | https://software.cisco.com/download/home/286326476/type/286326893/release |
+| K3P-Q(X100) | https://software.cisco.com/download/home/286326485/type/286326893/release |
+| V5P         | https://software.cisco.com/download/home/286326493/type/286326893/release |
+| V9P / V9P-3 | https://software.cisco.com/download/home/286326498/type/286326893/release |
+| GM          | https://software.cisco.com/download/home/286326502/type/286326893/release |
+| HPT         | https://software.cisco.com/download/home/286326507/type/286326893/release |
 
 
 
@@ -665,19 +681,19 @@ dmesg | grep -i -E "exanic|exasock"
 
 ## 22. 常见问题与解答
 
-问题："module verification failed: signature and/or required key missing - tainting kernel"告警信息
+问题1："module verification failed: signature and/or required key missing - tainting kernel"告警信息
 
 解答：exanic的kernel驱动没有签名，所以会有这样的告警信息。可以忽略，不影响功能和使用
 
 
 
-问题："Rollover timer fired at an unexpected time: counter 0x2 hwtime 0x79136cbc"告警信息
+问题2："Rollover timer fired at an unexpected time: counter 0x2 hwtime 0x79136cbc"告警信息
 
 解答：如果您只看到一次此消息，则很可能是由另一个进程（如 NTP 或 PTP）引起的，该进程必须在启动时大量调整时钟。 如果您看到这些消息偶尔出现并且需要一点时间来恢复，则可能是另一个进程正在调整时钟或高系统负载导致计时器延迟。 如果您连续看到这些消息并且翻转超时每次都关闭几乎完全相同的数量，这表明时钟运行得太快或太慢。请注意，某些 Linux 内核（4.9.0，已在 4.14.15 中修复）对 Intel Skylake Xeon CPU 使用了不正确的 TSC 速率 - 如果您正在运行这些 CPU 之一，则应检查您的内核版本。对于 CentOS/RHEL 内核，此问题已在 3.10.0-862.2.3 中修复。
 
 
 
-问题："modprobe: FATAL: Module exanic is in use."告警信息，无法卸载内核驱动
+问题3："modprobe: FATAL: Module exanic is in use."告警信息，无法卸载内核驱动
 
 解答：内核驱动包括：exanic和exasock。默认exanic会被exasock使用，所以我们需要先移除exasock，才能再移除exanic
 
@@ -690,9 +706,51 @@ modprobe -r exanic
 
 
 
-问题：通过exact-capture生成的expcap或pcap文件，无法通过Wireshark显示时间戳信息
+问题4：通过exact-capture生成的expcap或pcap文件，无法通过Wireshark显示时间戳信息
 
 解答：Wireshark默认包含了Exablaze trailer解析工具，但是该工具仅适用于Nexus 3550-F HPT交换机输出的数据包。
+
+
+
+问题5：Linux Kernel 5.15内核版本无法安装驱动程序
+
+解答：先下载源码驱动，然后下载5.15驱动Patch文件：https://github.com/yazshen/cisco-ultra-low-latency/blob/main/driver/20220602-180008529_kernel-5.15-fix.patch
+
+运行如下命令，安装Patch：
+
+```bash
+cd /path/to/exanic-software
+patch -p1 < /path/to/kernel-5.15-fix.patch
+make
+sudo make install
+```
+
+
+
+问题6：网卡挡板上的指示灯分别表示什么信息
+
+解答：
+
+服务器刚开启时，所有LED灯应该短暂闪烁一次。 
+如果没有插入SFP/QSFP模块，则所有LED灯应该关闭。
+如果没有模块插入时LED灯仍然亮着，且卡在lspci中未出现，则尝试进行固件恢复过程。 
+插入SFP/QSFP模块后，端口LED灯应变为橙色。
+如果LED灯未点亮，请检查连接器是否完全插入，或尝试更换其他模块。 
+一旦从Linux系统中启用，如果检测到链接，则端口LED灯应该变为绿色。如果LED仍然呈橙色，请使用exanic-config实用程序检查端口是否已启用并具有正确的设置。
+如果在PPS连接器附近出现红色LED或端口LED在没有插入模块的情况下闪烁，则表示固件已损坏，卡已进入恢复模式。必须使用exanic-fwupdate实用程序加载新固件。
+如果没有LED随时亮起，则可能卡或插槽受损。
+
+
+
+问题7：exanic-config返回信息中error、ignored和dropped计数分别代表什么原因
+
+解答：
+
+ignored: 指未匹配本地MAC地址的数据包。当NIC接收到一个单播但目标地址不同的数据包时，ignored计数会增加。这不是由于负载或NIC/主机的任何问题，而是因为另一端设备正在发送不是发送给此设备的数据包。
+
+error: 指的是未通过CRC余校验的数据包。这种行为的常见原因是来自另一端的信号不良，例如电缆或光模块异常。请在网卡端运行exanic-config exanicX:Y sfp status查看模块状态，更换电缆或模块进行交叉测试。
+
+dropped: 指由于 PCIe 带宽不足而丢失的数据包，无法将所有数据包通过PCIe传输到主机内存中。如果发生这种情况，请检查 lspci -vvv，特别是 SmartNIC 的 LnkSta，以验证卡是否以速度 8GT/s （PCIe Gen 3.0） 和宽度 x8 运行。丢弃的数据包也可能是由于系统，例如，在从远程访问网卡并出现 QPI 瓶颈或传入网络带宽超过 PCI Express 链路上的可用带宽（例如，8x10G 或 2x40G 可能超过线速突发期间 8x8Gbit/s 链路上的可用带宽）。
 
 
 
