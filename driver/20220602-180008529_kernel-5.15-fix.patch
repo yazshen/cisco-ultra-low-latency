@@ -1,0 +1,117 @@
+diff --git a/modules/exasock/exasock-bonding-main.c b/modules/exasock/exasock-bonding-main.c
+index ba7511c67..b86dbd911 100644
+--- a/modules/exasock/exasock-bonding-main.c
++++ b/modules/exasock/exasock-bonding-main.c
+@@ -77,17 +77,48 @@ bonding_master_list_unlock(struct bonding *b)
+ static bool
+ up_bonding_ko_ref_if_zero(struct exabond_info *e)
+ {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0)
++   struct module* m;
++   int len = strlen("bonding");
++#endif
++
+     if (e->bonding_ko_ref)
+         return true;
+ 
++    /* find_module function has been removed since 5.12.0 */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0)
+     e->bonding_ko_ref = find_module("bonding");
+     if (e->bonding_ko_ref == NULL || !try_module_get(e->bonding_ko_ref))
+     {
+         e->bonding_ko_ref = NULL;
+         return false;
+     }
+-
+     return true;
++#else /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0) */
++    rcu_read_lock();
++    list_for_each_entry_rcu(m, &THIS_MODULE->list, list)
++    {
++        if (m->state == MODULE_STATE_UNFORMED)
++            continue;
++
++        if (strlen(m->name) == len &&
++            !memcmp(m->name, "bonding", len))
++        {
++            if (!try_module_get(m))
++            {
++                e->bonding_ko_ref = NULL;
++                rcu_read_unlock();
++                return false;
++            }
++            e->bonding_ko_ref = m;
++            rcu_read_unlock();
++            return true;
++        }
++    }
++    rcu_read_unlock();
++    e->bonding_ko_ref = NULL;
++    return false;
++#endif
+ }
+ 
+ static void
+diff --git a/modules/exanic/exanic-main.c b/modules/exanic/exanic-main.c
+index 10b8b1f71..a004f8aa3 100644
+--- a/modules/exanic/exanic-main.c
++++ b/modules/exanic/exanic-main.c
+@@ -2087,5 +2087,8 @@ module_exit(exanic_exit);
+ MODULE_AUTHOR("Exablaze team <support@exablaze.com>");
+ MODULE_DESCRIPTION("ExaNIC network driver");
+ MODULE_LICENSE("GPL");
+-MODULE_VERSION(DRV_VERSION)
++MODULE_VERSION(DRV_VERSION);
++/* MODULE_SUPPORTED_SUPPORTED device has been removed since kernel version 5.12 */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0)
+ MODULE_SUPPORTED_DEVICE(DRV_NAME);
++#endif
+diff --git a/modules/exanic/Makefile b/modules/exanic/Makefile
+index 15daafae9..4e247f352 100644
+--- a/modules/exanic/Makefile
++++ b/modules/exanic/Makefile
+@@ -7,7 +7,8 @@ exanic-objs := exanic-main.o exanic-filter.o exanic-ctx.o exanic-dev.o exanic-ne
+ RH_ETHTOOL_OPS_EXT := ${shell egrep -c 'ethtool_ops_ext\b' $(srctree)/include/linux/ethtool.h}
+ HAS_NETDEVICE_DEV_PORT := ${shell grep -c 'dev_port' $(srctree)/include/linux/netdevice.h}
+ USE_RH_NETDEV_CHANGE_MTU := ${shell grep -c 'RH_KABI_RENAME.*ndo_change_mtu' $(srctree)/include/linux/netdevice.h}
+-ccflags-y := -D__HAS_NETDEVICE_DEV_PORT=$(HAS_NETDEVICE_DEV_PORT) -D__USE_RH_NETDEV_CHANGE_MTU=$(USE_RH_NETDEV_CHANGE_MTU) -D__RH_ETHTOOL_OPS_EXT=$(RH_ETHTOOL_OPS_EXT)
++HAS_KERNEL_ETHTOOL_COALESCE_STRUCT := ${shell egrep -c '^struct kernel_ethtool_coalesce' $(srctree)/include/linux/ethtool.h}
++ccflags-y := -D__HAS_NETDEVICE_DEV_PORT=$(HAS_NETDEVICE_DEV_PORT) -D__USE_RH_NETDEV_CHANGE_MTU=$(USE_RH_NETDEV_CHANGE_MTU) -D__RH_ETHTOOL_OPS_EXT=$(RH_ETHTOOL_OPS_EXT) -D__HAS_KERNEL_ETHTOOL_COALESCE=$(HAS_KERNEL_ETHTOOL_COALESCE_STRUCT)
+ 
+ else # normal part makefile
+ 
+diff --git a/modules/exanic/exanic-netdev.c b/modules/exanic/exanic-netdev.c
+index 1ad3ac538..1aff666ff 100644
+--- a/modules/exanic/exanic-netdev.c
++++ b/modules/exanic/exanic-netdev.c
+@@ -1419,16 +1419,30 @@ out:
+     return err;
+ }
+ 
++#if __HAS_KERNEL_ETHTOOL_COALESCE
++static int exanic_netdev_get_coalesce(struct net_device *ndev,
++                                      struct ethtool_coalesce *ec,
++                                      struct kernel_ethtool_coalesce *kec,
++                                      struct netlink_ext_ack *nea)
++#else /* __HAS_KERNEL_ETHTOOL_COALESCE */
+ static int exanic_netdev_get_coalesce(struct net_device *ndev,
+                                       struct ethtool_coalesce *ec)
++#endif /* __HAS_KERNEL_ETHTOOL_COALESCE */
+ {
+     struct exanic_netdev_priv *priv = netdev_priv(ndev);
+     ec->rx_coalesce_usecs = priv->rx_coalesce_timeout_ns / 1000;
+     return 0;
+ }
+ 
++#if __HAS_KERNEL_ETHTOOL_COALESCE
++static int exanic_netdev_set_coalesce(struct net_device *ndev,
++                                      struct ethtool_coalesce *ec,
++                                      struct kernel_ethtool_coalesce *kec,
++                                      struct netlink_ext_ack *nea)
++#else /* __HAS_KERNEL_ETHTOOL_COALESCE */
+ static int exanic_netdev_set_coalesce(struct net_device *ndev,
+                                       struct ethtool_coalesce *ec)
++#endif /* __HAS_KERNEL_ETHTOOL_COALESCE */
+ {
+     struct exanic_netdev_priv *priv = netdev_priv(ndev);
+ 
