@@ -13,7 +13,7 @@
 | V1.4 | 2023.02.17 | 申亚中(yazshen@cisco.com)  | 更新常见问题解答和技术支持流程                       |
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
-| V1.7 | 2023.05.25 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
+| V1.7 | 2023.06.09 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
 
 
 
@@ -751,6 +751,16 @@ ignored: 指未匹配本地MAC地址的数据包。当NIC接收到一个单播�
 error: 指的是未通过CRC余校验的数据包。这种行为的常见原因是来自另一端的信号不良，例如电缆或光模块异常。请在网卡端运行exanic-config exanicX:Y sfp status查看模块状态，更换电缆或模块进行交叉测试。
 
 dropped: 指由于 PCIe 带宽不足而丢失的数据包，无法将所有数据包通过PCIe传输到主机内存中。如果发生这种情况，请检查 lspci -vvv，特别是 SmartNIC 的 LnkSta，以验证卡是否以速度 8GT/s （PCIe Gen 3.0） 和宽度 x8 运行。丢弃的数据包也可能是由于系统，例如，在从远程访问网卡并出现 QPI 瓶颈或传入网络带宽超过 PCI Express 链路上的可用带宽（例如，8x10G 或 2x40G 可能超过线速突发期间 8x8Gbit/s 链路上的可用带宽）。
+
+
+
+问题8: exanic-fwupdate -r命令运行后，出现"Reloading card........ERROR: device did not reappear at /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 after hot reload. If you cannot find the card in lspci, a host reboot or recovery mode boot may be required."错误信息
+
+解答：
+
+exanic-fwupdate -r命令是通过PCIe remove, host_reset, rescan方式进行设备重置并激活新固件。但是，如果固件更新后，BAR配置发生变化，那就会造成一些意外情况。如果BAR变小，不会有异常。如果BAR变大，如果没有足够的地址空间分配给设备连接的端口，那就会造成无法分配地址空间，设备无法枚举。解决方法是重新启动服务器，才能重新分配资源。
+
+
 
 
 
