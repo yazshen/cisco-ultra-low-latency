@@ -793,7 +793,7 @@ tcpdump参数：默认tcpdump的buffer为4KB，容易造成dropped by kernel。�
 
 解决方案1：采用一层交换机，通过tap方式实现多个设备接收。原因是一层交换机不会解析以太网协议，通过光信号复制，实现多路接收。
 
-解决方案2：采用思科Nexus 3548交换机，通过warp span方式实现一进多出。warp span功能不会经过ACL策略、L2和L3转发表影响，直接数据包复制送到多个端口。需要注意：warp span的源端口必须为1/36口。
+解决方案2：采用思科Nexus 3548交换机，通过warp span方式实现一进多出。warp span功能不会收到ACL策略、L2和L3转发表影响，直接数据包复制送到多个端口。需要注意：warp span的源端口必须为1/36口。
 
 
 
