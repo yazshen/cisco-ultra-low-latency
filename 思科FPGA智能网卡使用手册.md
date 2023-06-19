@@ -13,7 +13,7 @@
 | V1.4 | 2023.02.17 | 申亚中(yazshen@cisco.com)  | 更新常见问题解答和技术支持流程                       |
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
-| V1.7 | 2023.06.09 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
+| V1.7 | 2023.06.19 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
 
 
 
@@ -754,11 +754,46 @@ dropped: 指由于 PCIe 带宽不足而丢失的数据包，无法将所有数�
 
 
 
-问题8: exanic-fwupdate -r命令运行后，出现"Reloading card........ERROR: device did not reappear at /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 after hot reload. If you cannot find the card in lspci, a host reboot or recovery mode boot may be required."错误信息
+问题8：exanic-fwupdate -r命令运行后，出现"Reloading card........ERROR: device did not reappear at /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 after hot reload. If you cannot find the card in lspci, a host reboot or recovery mode boot may be required."错误信息
 
 解答：
 
 exanic-fwupdate -r命令是通过PCIe remove, host_reset, rescan方式进行设备重置并激活新固件。但是，如果固件更新后，BAR配置发生变化，那就会造成一些意外情况。如果BAR变小，不会有异常。如果BAR变大，如果没有足够的地址空间分配给设备连接的端口，那就会造成无法分配地址空间，设备无法枚举。解决方法是重新启动服务器，才能重新分配资源。
+
+
+
+问题9：端口无法正常工作，显示“Port status: disabled"
+
+解答：
+
+端口disabled状态，需通过该命令重新启用: exanic-config interface-name up
+
+
+
+问题10：X10/X25/X100网卡刷新和激活端口镜像固件后，无法收到Mirror的数据包
+
+思科智能网卡启用Mirror功能后，X10和X25在0口上配置为Mirror源端口，可以按需启用镜像RX或TX或RX+TX方向的流量（X100型号可以支持0-6口）。X10和X25在1口自动成为Mirror的输出端口（X100为7口）。
+
+Mirror数据是通过网卡自动完成镜像和转发，不会经过Linux系统。所以，我们在思科网卡本身的服务器上，无法通过TCPDUMP方式抓包获取1口或7口的镜像数据。也无法通过1口或7口计数器发现流量统计信息。但是，服务器本身可以完成所有端口原始流量的处理。
+
+第一种情况：我们在1口或7口外部直接连接PC接收设备。那么我们需要在PC接收服务器上启用本地网卡相关接口上的promisc混杂模式，然后用tcpdump进行捕捉：
+
+```
+ifconfig <interface name> promisc
+tcpdump -i <interface name> -B 4096 -n
+```
+
+启用混杂模式的原因是：思科镜像的流量中destination mac地址并不一定是PC接收设备的网卡mac地址。否则，会被PC接收设备丢弃。
+
+tcpdump参数：默认tcpdump的buffer为4KB，容易造成dropped by kernel。建议按需调整-B参数，4096等于4MB。同时避免dns lookup也可以使用-n参数。
+
+第二种情况：我们在1口或7口外部直接连接交换机设备，然后送到远端一个或多个PC接收设备。
+
+传统二层或三层交换机，首先会检查Mirror数据包中的目标mac或目标IP信息，然后进行策略转发。但是，如果如果找不到相关记录或路由表送到其他设备后，就会造成PC接收设备无法收到Mirror数据包。
+
+解决方案1：采用一层交换机，通过tap方式实现多个设备接收。原因是一层交换机不会解析以太网协议，通过光信号复制，实现多路接收。
+
+解决方案2：采用思科Nexus 3548交换机，通过warp span方式实现一进多出。warp span功能不会经过ACL策略、L2和L3转发表影响，直接数据包复制送到多个端口。需要注意：warp span的源端口必须为1/36口。
 
 
 
