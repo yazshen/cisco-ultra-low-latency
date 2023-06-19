@@ -681,19 +681,19 @@ dmesg | grep -i -E "exanic|exasock"
 
 ## 22. 常见问题与解答
 
-问题1："module verification failed: signature and/or required key missing - tainting kernel"告警信息
+### 问题1："module verification failed: signature and/or required key missing - tainting kernel"告警信息
 
 解答：exanic的kernel驱动没有签名，所以会有这样的告警信息。可以忽略，不影响功能和使用
 
 
 
-问题2："Rollover timer fired at an unexpected time: counter 0x2 hwtime 0x79136cbc"告警信息
+### 问题2："Rollover timer fired at an unexpected time: counter 0x2 hwtime 0x79136cbc"告警信息
 
 解答：如果您只看到一次此消息，则很可能是由另一个进程（如 NTP 或 PTP）引起的，该进程必须在启动时大量调整时钟。 如果您看到这些消息偶尔出现并且需要一点时间来恢复，则可能是另一个进程正在调整时钟或高系统负载导致计时器延迟。 如果您连续看到这些消息并且翻转超时每次都关闭几乎完全相同的数量，这表明时钟运行得太快或太慢。请注意，某些 Linux 内核（4.9.0，已在 4.14.15 中修复）对 Intel Skylake Xeon CPU 使用了不正确的 TSC 速率 - 如果您正在运行这些 CPU 之一，则应检查您的内核版本。对于 CentOS/RHEL 内核，此问题已在 3.10.0-862.2.3 中修复。
 
 
 
-问题3："modprobe: FATAL: Module exanic is in use."告警信息，无法卸载内核驱动
+### 问题3："modprobe: FATAL: Module exanic is in use."告警信息，无法卸载内核驱动
 
 解答：内核驱动包括：exanic和exasock。默认exanic会被exasock使用，所以我们需要先移除exasock，才能再移除exanic
 
@@ -706,13 +706,13 @@ modprobe -r exanic
 
 
 
-问题4：通过exact-capture生成的expcap或pcap文件，无法通过Wireshark显示时间戳信息
+### 问题4：通过exact-capture生成的expcap或pcap文件，无法通过Wireshark显示时间戳信息
 
 解答：Wireshark默认包含了Exablaze trailer解析工具，但是该工具仅适用于Nexus 3550-F HPT交换机输出的数据包。
 
 
 
-问题5：Linux Kernel 5.15内核版本无法安装驱动程序
+### 问题5：Linux Kernel 5.15内核版本无法安装驱动程序
 
 解答：先下载源码驱动，然后下载5.15驱动Patch文件：https://github.com/yazshen/cisco-ultra-low-latency/blob/main/driver/20220602-180008529_kernel-5.15-fix.patch
 
@@ -727,7 +727,7 @@ sudo make install
 
 
 
-问题6：网卡挡板上的指示灯分别表示什么信息
+### 问题6：网卡挡板上的指示灯分别表示什么信息
 
 解答：
 
@@ -742,7 +742,7 @@ sudo make install
 
 
 
-问题7：exanic-config返回信息中error、ignored和dropped计数分别代表什么原因
+### 问题7：exanic-config返回信息中error、ignored和dropped计数分别代表什么原因
 
 解答：
 
@@ -754,7 +754,7 @@ dropped: 指由于 PCIe 带宽不足而丢失的数据包，无法将所有数�
 
 
 
-问题8：exanic-fwupdate -r命令运行后，出现"Reloading card........ERROR: device did not reappear at /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 after hot reload. If you cannot find the card in lspci, a host reboot or recovery mode boot may be required."错误信息
+### 问题8：exanic-fwupdate -r命令运行后，出现"Reloading card........ERROR: device did not reappear at /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 after hot reload. If you cannot find the card in lspci, a host reboot or recovery mode boot may be required."错误信息
 
 解答：
 
@@ -762,7 +762,7 @@ exanic-fwupdate -r命令是通过PCIe remove, host_reset, rescan方式进行设�
 
 
 
-问题9：端口无法正常工作，显示“Port status: disabled"
+### 问题9：端口无法正常工作，显示“Port status: disabled"
 
 解答：
 
@@ -770,7 +770,7 @@ exanic-fwupdate -r命令是通过PCIe remove, host_reset, rescan方式进行设�
 
 
 
-问题10：X10/X25/X100网卡刷新和激活端口镜像固件后，无法收到Mirror的数据包
+### 问题10：X10/X25/X100网卡刷新和激活端口镜像固件后，无法收到Mirror的数据包
 
 思科智能网卡启用Mirror功能后，X10和X25在0口上配置为Mirror源端口，可以按需启用镜像RX或TX或RX+TX方向的流量（X100型号可以支持0-6口）。X10和X25在1口自动成为Mirror的输出端口（X100为7口）。
 
