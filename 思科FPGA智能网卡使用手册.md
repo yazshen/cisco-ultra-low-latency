@@ -13,7 +13,7 @@
 | V1.4 | 2023.02.17 | 申亚中(yazshen@cisco.com)  | 更新常见问题解答和技术支持流程                       |
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
-| V1.7 | 2023.06.19 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
+| V1.7 | 2023.07.08 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
 
 
 
@@ -30,8 +30,8 @@
 | ExaNIC v5P       | Nexus SmartNIC+ V5P                | NXN-V5P-8X-9GB=  |
 | ExaNIC v9P       | Nexus SmartNIC+ V9P                | NXN-V9P-16X-9GB= |
 |                  | Nexus SmartNIC+ V9P-3              | NXN-V9P3-16X-9GB |
-| ExaNIC HPT       | Nexus NIC HPT                      | NXN-GM=          |
-| ExaNIC GM        | Nexus NIC GM                       | NXN-HPT=         |
+| ExaNIC HPT       | Nexus NIC HPT                      | NXN-HPT=         |
+| ExaNIC GM        | Nexus NIC GM                       | NXN-GM=          |
 
 官方说明链接：https://www.cisco.com/c/en/us/about/corporate-strategy-office/acquisitions/exablaze.html#~tab-products
 
@@ -774,7 +774,7 @@ exanic-fwupdate -r命令是通过PCIe remove, host_reset, rescan方式进行设�
 
 思科智能网卡启用Mirror功能后，X10和X25在0口上配置为Mirror源端口，可以按需启用镜像RX或TX或RX+TX方向的流量（X100型号可以支持0-6口）。X10和X25在1口自动成为Mirror的输出端口（X100为7口）。
 
-Mirror数据是通过网卡自动完成镜像和转发，不会经过Linux系统。所以，我们在思科网卡本身的服务器上，无法通过TCPDUMP方式抓包获取1口或7口的镜像数据。也无法通过1口或7口计数器发现流量统计信息。但是，服务器本身可以完成所有端口原始流量的处理。
+Mirror数据是通过网卡自动完成镜像和转发，不会经过Linux系统。所以，我们在思科网卡本身的服务器上，无法通过TCPDUMP方式抓包获取1口或7口的镜像数据，也无法通过1口或7口计数器发现流量统计信息（X25网卡的20230622版本固件可以支持1口Tx显示Mirror统计信息）。但是，服务器本身可以完成所有端口原始流量的处理。
 
 第一种情况：我们在1口或7口外部直接连接PC接收设备。那么我们需要在PC接收服务器上启用本地网卡相关接口上的promisc混杂模式，然后用tcpdump进行捕捉：
 
