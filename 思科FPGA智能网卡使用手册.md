@@ -13,7 +13,7 @@
 | V1.4 | 2023.02.17 | 申亚中(yazshen@cisco.com)  | 更新常见问题解答和技术支持流程                       |
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
-| V1.7 | 2023.07.08 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
+| V1.7 | 2023.08.13 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
 
 
 
@@ -796,6 +796,28 @@ tcpdump参数：默认tcpdump的buffer为4KB，容易造成dropped by kernel。�
 解决方案2：采用思科Nexus 3548交换机，通过warp span方式实现一进多出。warp span功能不会收到ACL策略、L2和L3转发表影响，直接数据包复制送到多个端口。需要注意：warp span的源端口必须为1/36口。
 
 
+
+### 问题11：应用程序自定义Socket Buffer之后，使用exasock出现warning信息："exasock warning: setting of SO_SNDBUF on accelerated socket is not effective"
+
+思科Exasock应用默认Socket Buffer为1M，如果应用程序自定义Socket Buffer之后就出出现该告警信息。如果需要对TCP/UDP应用的Socket Buffer进行调整，可以修改如下文件中的Buffer定义：
+
+https://github.com/cisco/exanic-software/blob/master/modules/exasock/exasock-tcp.c
+
+https://github.com/cisco/exanic-software/blob/master/modules/exasock/exasock-udp.c
+
+```c
+/* Attention!!!: both the size of RX_BUFFER and TX_BUFFER must be a power of 2 */
+#define RX_BUFFER_SIZE          (1048576)
+#define RX_BUFFER_MASK          (RX_BUFFER_SIZE - 1)
+#define TX_BUFFER_SIZE          (1048576)
+#define TX_BUFFER_MASK          (TX_BUFFER_SIZE - 1)
+```
+
+```c
+#define RX_BUFFER_SIZE          1048576
+```
+
+注意：buffer值必须为2的倍数，修改完成后，重新编译并安装驱动
 
 
 
