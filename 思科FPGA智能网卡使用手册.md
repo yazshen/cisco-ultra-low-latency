@@ -13,7 +13,8 @@
 | V1.4 | 2023.02.17 | 申亚中(yazshen@cisco.com)  | 更新常见问题解答和技术支持流程                       |
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
-| V1.7 | 2023.08.13 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
+| V1.7 | 2023.09.14 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
+| V1.8 | 2024.01.04 | 申亚中(yazshen@cisco.com)  | 更新端口镜像的Port-Port延迟信息                      |
 
 
 
@@ -430,22 +431,7 @@ exanic-config exanic0:0 bypass-only on
 exanic-config exanic0:0 local-loopback on
 ```
 
-### 12.4. Port Mirroring Function
-
-端口镜像允许您将在任何端口上接收或传输的任何流量复制到最后一个端口之外。这一切都在硬件中完成，因此不会在主机处理器上产生任何开销，并且任何端口上的 RX 和 TX 数据的镜像都是可以单独选择的。最后一个端口（镜像端口）仍可用作主机的普通接口
-
-```
-exanic-config exanic0:0 mirror-rx on
-exanic-config exanic0:0 mirror-tx on
-```
-
-| 网卡型号     | 源端口ID          | 镜像目标端口ID | 延迟 |
-| ------------ | ----------------- | -------------- | ---- |
-| K35-S (X10)  | 0                 | 1              | 30ns |
-| K3P-S (X25)  | 0                 | 1              | 10ns |
-| K3P-Q (X100) | 0-6任意一个或多个 | 7              | 10ns |
-
-### 12.5. Port Bridging Function
+### 12.4. Port Bridging Function
 
 端口桥接可让 SmartNIC 作为小型交换机运行。如果您选择启用端口桥接，物理端口 0 和 1 在硬件中由 FPGA 连接在一起。这意味着到达端口 0 的任何不是发往主机的数据包都将被转发出端口 1（对于到达端口 1 的数据包也是如此）。此外，网卡支持硬件速率匹配（例如，当桥接端口具有不同速度时，在 1GbE 和 10GbE 之间进行转换）
 
@@ -457,6 +443,21 @@ exanic-config exanic0 bridging on
 | ----------- | ------------------------ | --------------------- |
 | K35-S (X10) | ~180ns                   | ~30ns                 |
 | K3P-S (X25) | ~75ns                    | 0ns                   |
+
+### 12.5. Port Mirroring Function
+
+端口镜像允许您将在任何端口上接收或传输的任何流量复制到最后一个端口之外。这一切都在硬件中完成，因此不会在主机处理器上产生任何开销，并且任何端口上的 RX 和 TX 数据的镜像都是可以单独选择的。最后一个端口（镜像端口）仍可用作主机的普通接口
+
+```
+exanic-config exanic0:0 mirror-rx on
+exanic-config exanic0:0 mirror-tx on
+```
+
+| 网卡型号     | 源端口ID          | 镜像目标端口ID | Output Port延迟 | Port-Port延迟 |
+| ------------ | ----------------- | -------------- | --------------- | ------------- |
+| K35-S (X10)  | 0                 | 1              | 30ns            | 190ns         |
+| K3P-S (X25)  | 0                 | 1              | 10ns            | 85ns          |
+| K3P-Q (X100) | 0-6任意一个或多个 | 7              | 10ns            | 85ns          |
 
 
 
@@ -818,6 +819,14 @@ https://github.com/cisco/exanic-software/blob/master/modules/exasock/exasock-udp
 ```
 
 注意：buffer值必须为2的倍数，修改完成后，重新编译并安装驱动
+
+
+
+### 问题12：2.7.3版本的驱动无法在5.14.x版本Linux内核系统上安装
+
+目前，2.7.3版本还不支持5.14.x版本Linux内核，需要通过一个第三方补丁：https://github.com/cisco/exanic-software/pull/71
+
+备注：该补丁目前ptp/clock还无法正常工作
 
 
 
