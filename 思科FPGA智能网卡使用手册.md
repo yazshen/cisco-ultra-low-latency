@@ -14,7 +14,7 @@
 | V1.5 | 2023.02.27 | 申亚中(yazshen@cisco.com)  | 更新网卡物理尺寸信息                                 |
 | V1.6 | 2023.03.28 | 申亚中(yazshen@cisco.com)  | 更新时钟同步说明和时间戳解析脚本工具                 |
 | V1.7 | 2023.09.14 | 申亚中(yazshen@cisco.com)  | 更新官方固件链接和常见问题                           |
-| V1.8 | 2024.01.04 | 申亚中(yazshen@cisco.com)  | 更新端口镜像的Port-Port延迟信息                      |
+| V1.8 | 2024.01.25 | 申亚中(yazshen@cisco.com)  | 更新端口镜像的Port-Port延迟信息、常见问题            |
 
 
 
@@ -101,7 +101,7 @@
 | Ubuntu        | https://exablaze.com/downloads/apt/      |
 | Source-Code   | https://github.com/cisco/exanic-software |
 
-推荐版本：**2.7.2** 或 **2.7.3**
+推荐版本：**2.7.4**版本
 
 
 
@@ -822,17 +822,23 @@ https://github.com/cisco/exanic-software/blob/master/modules/exasock/exasock-udp
 
 
 
-### 问题12：2.7.3版本的驱动无法在5.14.x版本Linux内核系统上安装
+### 问题12：K35-S(X10)网卡在部分Intel十三代CPU服务器上，重启系统后无法找到网卡
 
-目前，2.7.3版本还不支持5.14.x版本Linux内核，需要通过一个第三方补丁：https://github.com/cisco/exanic-software/pull/71
+K35-S(X10)网卡发现在部分Intel十三代CPU服务器上，会出现重启系统后，无法找到网卡设备。
 
-备注：该补丁目前ptp/clock还无法正常工作
+解决方案：升级主板BIOS固件
+
+
+
+### 问题13：安装2.7.4版本驱动后，发现“exanic-fwupdate -r"命令无响应
+
+目前仅在早期Exablaze品牌网卡上发现有异常，临时解决方案：不要使用这个命令，改为重启服务器来激活新固件
 
 
 
 ## 23. 思科售后技术支持服务
 
-服务有效期内，思科售后技术支持服务可以为客户提供：功能和配置咨询、故障诊断、硬件翻修等售后服务。
+服务有效期内，思科售后技术支持服务可以为客户提供：功能和配置咨询、故障诊断、硬件返修等售后服务。
 
 服务方式：电话、电子邮件或WebEx在线会议等远程协助方式。
 
